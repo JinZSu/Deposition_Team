@@ -9,8 +9,12 @@ class deposition:
 		self.pos_y = 0
 		self.curr_pos = 0
 		self.weight = 50
+		self.weight_target = 90000000000 #how much we can target/get
+		self.accetable_weight = 2 #how much the weight can sense when fully empty
 		# when rack is false, it is at original position
 		self.rack = False
+		self.rate = .07 #the rate that the deposition is changing
+		self.rate_stall = 0.9999999 #if the weight is constant
 
 	def actuator(self, target_pos):
 		diff = self.curr_target - target_pos
@@ -31,15 +35,31 @@ class deposition:
 		if purpose == "collect":
 			self.actuator(self.pos_z)
 			self.vibration()
+			while(self.weight<self.weight_target):
+				self.weight=update() #getting update from the weight
+			self.vibration()
 		elif purpose == "deposit":
 			self.actuator(self.pos_x)
 			self.push()
+			weight_five_seconds_ago=self.weight
+			while(self.weight>self.acceptable_weight):
+				self.weight=update() #getting update from the weight
+				rate =(self.weight-weight_give_seconds_Ago)/weight_give_seconds_ago
+				elif(rate<=self.rate_stall):
+					push("Attack")
+			self.push()
 		self.actuator.pos_y()
 
-	def push(self):
-		print "Rack and pinion pushing"
-
-	
+	def push(self,attack_mode=''):
+		if(attack_mode=="Attack"):
+			print "GO BACK AND FOWARD"
+		elif self.rack:
+			print "Not Rack and pinion pushing"
+			self.rack=False
+		else:
+			print "Rack and pinion pushing"
+			self.rack=True
+		
 	
 		
 		 
